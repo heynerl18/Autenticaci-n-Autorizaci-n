@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
 
   password: {
     type: String,
-    equired: [true, 'Password is required'],
+    required: [true, 'Password is required'],
   },
 
   img: {
