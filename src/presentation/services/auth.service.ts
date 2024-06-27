@@ -21,21 +21,24 @@ export class AuthService {
     try {
 
       const user = new UserModel(registerUserDto);
-
+      // Encriptar password
       user.password = bcryptAdapter.hash(registerUserDto.password);
 
       await user.save();
 
-      await this.sendEmailValidationLink(user.email);
-
-
-      // Generar JWT, para mantener la autenticacion
-
       // Email de confirmacion
+      await this.sendEmailValidationLink(user.email);
 
       const { password, ...userEntity } = UserEntity.fromObject(user);
 
-      return { user: userEntity, token: 'ABC' };
+      // Generar token
+      const token = await JwtAdapter.generateToken({ id: user.id });
+      if ( !token ) throw CustomError.internalServer('Error while creating JWT');
+
+      return { 
+        user: userEntity,
+        token 
+      };
         
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
